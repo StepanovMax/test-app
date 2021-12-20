@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
 import {
   inject,
 } from 'vue';
+
+import { User } from '../types'
 
 export default {
   name: 'ListItem',

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import {
   ref,
   watch,
@@ -12,8 +12,15 @@ export default {
   components: {
     ListItem,
   },
+  data() {
+    return {
+      x1: Math.ceil(Math.random() * 100),
+    }
+  },
   setup () {
-    const nameValue = ref('')
+    let x: string
+    x = 'This is a string, not a bool'
+    const nameValue = ref('' as string)
     const addedList = ref([])
     const responseData = ref(null)
     const isLatinSymbols = ref(null)
@@ -21,8 +28,10 @@ export default {
 
     provide('addedList', addedList.value)
 
+    // Switch the autosearch flag
     const runAutoSearch = () => {
       allowSearchFlag.value = !allowSearchFlag.value
+      // Run the fetch if input the the query
       if (allowSearchFlag.value === true && isInputFilled.value) {
         sendRequest()
       }
@@ -54,6 +63,7 @@ export default {
     }
 
     const isInputFilled = computed(() => {
+      // nameValue.value = '123'
       return nameValue.value.trim().length >= 2
     })
 
