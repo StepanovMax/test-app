@@ -11,5 +11,8 @@ module.exports = {
     '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub',
     '^.+\\.(js|jsx)?$': 'babel-jest'
   },
-  testEnvironment: "node", 
+  testEnvironment: "node",
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
 }

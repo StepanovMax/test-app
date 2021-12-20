@@ -17,6 +17,6 @@ describe('Simple test 2', () => {
 
 describe('App data is a func', () => {
   it('has data 3', () => {
-    expect(typeof App.data).toBe('function')
+    expect(typeof App.setup).toBe('function')
   })
 })
