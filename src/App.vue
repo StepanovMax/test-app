@@ -26,6 +26,14 @@ export default {
 </template>
 
 <style>
+.button {
+  @apply text-center text-sm cursor-pointer border-0;
+}
+
+.title {
+  @apply text-base font-semibold;
+}
+
 .link {
   @apply underline;
 }

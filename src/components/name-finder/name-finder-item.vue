@@ -3,8 +3,6 @@ import {
   inject,
 } from 'vue';
 
-import { User } from '../types'
-
 export default {
   name: 'ListItem',
   props: {
@@ -65,8 +63,25 @@ export default {
 
 <style scoped>
 .list-item-wrap {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
+  @apply flex justify-between w-full;
 }
+
+  .list-item-text {
+    color: #84A59D;
+  }
+
+.button {
+  @apply px-1 py-0 text-sm font-semibold;
+}
+
+  .button_add {
+    letter-spacing: 1px;
+    color: #FFFFFF;
+    border-radius: 4px;
+    background-color: #f0b659;
+  }
+
+  .button_add:hover {
+    background-color: #e6ae54;
+  }
 </style>

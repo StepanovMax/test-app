@@ -5,12 +5,12 @@ import {
   computed,
   provide,
 } from 'vue';
-import item from '@/components/name-finder/item.vue';
+import nameFinderItem from '@/components/name-finder/name-finder-item.vue';
 
 export default {
   name: 'name-finder',
   components: {
-    item,
+    nameFinderItem,
   },
   setup () {
     let x: string
@@ -18,19 +18,10 @@ export default {
     const nameValue = ref('' as string)
     const addedList = ref([])
     const responseData = ref(null)
-    const isLatinSymbols = ref(null)
-    const allowSearchFlag = ref(true)
+    const isCyrillicSymbols = ref(null)
+    const allowSearchFlag = ref(false)
 
     provide('addedList', addedList.value)
-
-    // Switch the autosearch flag
-    const runAutoSearch = () => {
-      allowSearchFlag.value = !allowSearchFlag.value
-      // Run the fetch if input the the query
-      if (allowSearchFlag.value === true && isInputFilled.value) {
-        sendRequest()
-      }
-    }
 
     const sendRequest = () => {
       const url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/fio";
@@ -47,7 +38,7 @@ export default {
         body: JSON.stringify({query: nameValue.value})
       }
 
-      if (allowSearchFlag.value) {
+      if (!allowSearchFlag.value) {
         fetch(url, options)
           .then(response => response.text())
           .then(result => {
@@ -58,16 +49,15 @@ export default {
     }
 
     const isInputFilled = computed(() => {
-      // nameValue.value = '123'
       return nameValue.value.trim().length >= 2
     })
 
     const cyrillicHint = computed(() => {
       if (isInputFilled.value) {
-        if (isLatinSymbols.value) {
-          return 'It\'s LATIN symbols, but the dadata we will make a convertation latin to cyrillic symbols'
-        } else {
+        if (isCyrillicSymbols.value) {
           return 'It\'s CYRILLIC symbols, it\'s OK'
+        } else {
+          return 'It\'s not CYRILLIC symbols, but the dadata we will make a convertation latin to cyrillic symbols or will ignore numbers'
         }
       } else {
         return ''
@@ -79,10 +69,19 @@ export default {
         sendRequest()
       }
 
-      if (!/[^a-zA-Z]/.test(nameValue.value.trim())) {
-        isLatinSymbols.value = true
+      if (/[^a-zA-Z]/.test(nameValue.value.trim())) {
+        isCyrillicSymbols.value = true
+      } else if (/\d/.test(nameValue.value.trim())) {
+        isCyrillicSymbols.value = false
       } else {
-        isLatinSymbols.value = false
+        isCyrillicSymbols.value = false
+      }
+    })
+
+    // Switch the autosearch flag
+    watch(allowSearchFlag, () => {
+      if (!allowSearchFlag.value === true && isInputFilled.value) {
+        sendRequest()
       }
     });
 
@@ -92,85 +91,82 @@ export default {
       cyrillicHint,
       responseData,
       isInputFilled,
-      isLatinSymbols,
+      isCyrillicSymbols,
       allowSearchFlag,
-      runAutoSearch,
     }
   }
 }
 </script>
 
 <template>
-  <div class="name-searcher">
-    <div class="name-searcher">
+  <div class="name-finder">
+    <div class="name-finder-inner">
+      <p class="hint">
+        {{ cyrillicHint }}
+      </p>
+
       <header class="">
         <h1 class="font-semibold text-2xl">
           Name finder
         </h1>
       </header>
 
-      <div class="">
+      <div class="finder">
         <input
-          :placeholder="allowSearchFlag ? 'Type your name' : 'I don\'t care about your typing!'"
+          :placeholder="!allowSearchFlag ? 'Type your name' : 'I don\'t care about your typing!'"
           type="text"
           class="search-input"
           v-model="nameValue"
         >
-        <p class="hint">
-          {{ cyrillicHint }}
-        </p>
+
+        <label for="hideAutosearch" class="cursor-pointer">
+          <input id="hideAutosearch" type="checkbox" v-model="allowSearchFlag">
+          Stop autosearch
+        </label>
       </div>
 
-      <div class="app-content">
+      <div class="flex space-x-8">
 
-        <h2 class="title">
-          Queried list 2
-        </h2>
+        <div class="">
+          <h2 class="title">
+            Queried list
+          </h2>
 
-        <ul class="list list_fetched">
-          <li
-            v-for="item in responseData"
-            :key="item.value"
-            class="list-item"
-          >
-            <item
-              :item="item"
-              type="add"
-            />
-          </li>
-        </ul>
+          <ul class="list list_fetched">
+            <li
+              v-for="item in responseData"
+              :key="item.value"
+              class="list-item"
+            >
+              <name-finder-item
+                :item="item"
+                type="add"
+              />
+            </li>
+          </ul>
+        </div>
 
-        <hr class="hr">
+        <div class="">
+          <h2 class="title">
+            Added list
+          </h2>
 
-        <h2 class="title">
-          Added list 2
-        </h2>
+          <ul class="list list_added">
+            <li
+              v-for="item in addedList"
+              :key="item.value"
+              class="list-item"
+            >
+              <name-finder-item
+                :item="item"
+                type="remove"
+              />
+            </li>
+          </ul>
+        </div>
 
-        <ul class="list list_added">
-          <li
-            v-for="item in addedList"
-            :key="item.value"
-            class="list-item"
-          >
-            <item
-              :item="item"
-              type="remove"
-            />
-          </li>
-        </ul>
       </div>
 
-      <footer class="app-footer">
-        <button
-          type="button"
-          @click="runAutoSearch"
-          class="button button_footer"
-          :class="allowSearchFlag ? 'button_footer-stop' : 'button_footer-allow'"
-          title="Stop the search, please!"
-        >
-          {{ allowSearchFlag ? 'Stop' : 'Allow' }} autosearch
-        </button>
-      </footer>
     </div>
   </div>
 </template>
@@ -179,81 +175,28 @@ export default {
 
 
 <style scoped>
-.name-searcher {
-  @apply m-auto w-80 relative;
+.title {
+  @apply text-lg;
+}
+
+.name-finder {
+  @apply m-auto flex justify-center items-center;
+}
+.name-finder-inner {
+  @apply relative border px-4 py-3 flex flex-col justify-center items-center;
 }
 
 .search-input {
-  height: 50px;
-  width: 100%;
-  font-size: 14px;
-  padding: 0;
-  border: 0;
-  text-indent: 25px;
-  outline: none;
+  @apply text-base w-full h-8 my-4 p-0 border-0 outline-none border-b-2;
 }
 
-.button {
-  border: 0;
-  cursor: pointer;
-  font-size: 14px;
-  text-align: center;
+.finder {
+  @apply mb-8 w-full;
 }
-
-.button_add {
-  letter-spacing: 1px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #F7EDE2;
-  padding: 5px 10px;
-  border-radius: 4px;
-  background-color: #f0b659;
-}
-
-.button_add:hover {
-  background-color: #e6ae54;
-}
-
-.button_footer {
-  width: 100%;
-  height: 50px;
-  color: #fff;
-  font-weight: 500;
-  padding: 10px 15px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.button_footer-stop {
-  background-color: #F3722C;
-}
-
-  .button_footer-stop:hover {
-    background-color: #e46b2b;
-  }
-
-.button_footer-allow {
-  background-color: #90BE6D;
-}
-
-  .button_footer-allow:hover {
-    background-color: #81ac61;
-  }
 
 .list {
-  margin: 0;
-  padding: 15px 15px 15px 0;
+  @apply w-60 m-0 py-4 px-4 pl-0;
 }
-
-  .list_fetched {
-    max-height: 300px;
-    overflow: auto;
-  }
-
-  .list_added {
-    max-height: 300px;
-    overflow: auto;
-  }
 
 .list-item {
   display: flex;
@@ -261,33 +204,24 @@ export default {
   margin-bottom: 4px;
 }
 
-.list-item-text {
-  color: #84A59D;
-}
+  .list_fetched {
+    max-height: 350px;
+    overflow: auto;
+  }
 
-.hr {
-  border: 0;
-  padding: 0;
-  height: 1px;
-  margin: 1em 0;
-  display: block;
-  border-top: 1px solid #F5CAC3;
-}
+  .list_added {
+    max-height: 350px;
+    overflow: auto;
+  }
 
 .hint {
-  bottom: 87%;
-  left: 25px;
-  right: 25px;
+  bottom: calc(100% + 5px);
+  right: 0px;
   position: absolute;
   font-size: 12px;
   color: #84A59D;
   letter-spacing: 0.4px;
   line-height: 1.2;
-}
-
-.title {
-  font-weight: 600;
-  font-size: 18px;
 }
 </style>
 
