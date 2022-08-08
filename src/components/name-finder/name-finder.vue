@@ -1,3 +1,77 @@
+<template>
+  <div class="name-finder">
+    <div class="name-finder-inner">
+      <p class="hint">
+        {{ cyrillicHint }}
+      </p>
+
+      <header class="">
+        <h1 class="text-2xl font-semibold">
+          Поиск имён и фамилий
+        </h1>
+      </header>
+
+      <div class="finder">
+        <input
+          :placeholder="!allowSearchFlag ? 'Введите имя' : 'Не работает'"
+          type="text"
+          class="search-input"
+          v-model="nameValue"
+        >
+
+        <label for="hideAutosearch" class="cursor-pointer">
+          <input id="hideAutosearch" type="checkbox" v-model="allowSearchFlag">
+          Стоп
+        </label>
+      </div>
+
+      <div class="flex space-x-8">
+
+        <div class="">
+          <h2 class="title">
+            Найденные
+          </h2>
+
+          <ul class="list list_fetched">
+            <li
+              v-for="item in responseData"
+              :key="item.value"
+              class="list-item"
+            >
+              <name-finder-item
+                :item="item"
+                type="add"
+              />
+            </li>
+          </ul>
+        </div>
+
+        <div class="">
+          <h2 class="title">
+            Добавленные
+          </h2>
+
+          <ul class="list list_added">
+            <li
+              v-for="item in addedList"
+              :key="item.value"
+              class="list-item"
+            >
+              <name-finder-item
+                :item="item"
+                type="remove"
+              />
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</template>
+
+
 <script lang="ts">
 import {
   ref,
@@ -5,7 +79,7 @@ import {
   computed,
   provide,
 } from 'vue';
-import nameFinderItem from '@/components/name-finder/name-finder-item.vue';
+import nameFinderItem from '@src/components/name-finder/name-finder-item.vue';
 
 export default {
   name: 'name-finder',
@@ -55,9 +129,9 @@ export default {
     const cyrillicHint = computed(() => {
       if (isInputFilled.value) {
         if (isCyrillicSymbols.value) {
-          return 'It\'s CYRILLIC symbols, it\'s OK'
+          return 'Это кириллица, всё ок'
         } else {
-          return 'It\'s not CYRILLIC symbols, but the dadata we will make a convertation latin to cyrillic symbols or will ignore numbers'
+          return 'Это не кириллица, но DADATA преобразует латиницу в кирилицу, поэтому ок.'
         }
       } else {
         return ''
@@ -97,81 +171,6 @@ export default {
   }
 }
 </script>
-
-<template>
-  <div class="name-finder">
-    <div class="name-finder-inner">
-      <p class="hint">
-        {{ cyrillicHint }}
-      </p>
-
-      <header class="">
-        <h1 class="font-semibold text-2xl">
-          Name finder
-        </h1>
-      </header>
-
-      <div class="finder">
-        <input
-          :placeholder="!allowSearchFlag ? 'Type your name' : 'I don\'t care about your typing!'"
-          type="text"
-          class="search-input"
-          v-model="nameValue"
-        >
-
-        <label for="hideAutosearch" class="cursor-pointer">
-          <input id="hideAutosearch" type="checkbox" v-model="allowSearchFlag">
-          Stop autosearch
-        </label>
-      </div>
-
-      <div class="flex space-x-8">
-
-        <div class="">
-          <h2 class="title">
-            Queried list
-          </h2>
-
-          <ul class="list list_fetched">
-            <li
-              v-for="item in responseData"
-              :key="item.value"
-              class="list-item"
-            >
-              <name-finder-item
-                :item="item"
-                type="add"
-              />
-            </li>
-          </ul>
-        </div>
-
-        <div class="">
-          <h2 class="title">
-            Added list
-          </h2>
-
-          <ul class="list list_added">
-            <li
-              v-for="item in addedList"
-              :key="item.value"
-              class="list-item"
-            >
-              <name-finder-item
-                :item="item"
-                type="remove"
-              />
-            </li>
-          </ul>
-        </div>
-
-      </div>
-
-    </div>
-  </div>
-</template>
-
-
 
 
 <style scoped>

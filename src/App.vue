@@ -1,9 +1,9 @@
 <script lang="ts">
-import appHeader from '@/components/app-header.vue';
-import appFooter from '@/components/app-footer.vue';
+import appHeader from '@cmp/app-header.vue';
+import appFooter from '@cmp/app-footer.vue';
 
 export default {
-  name: 'App',
+  name: 'app',
   components: {
     appHeader,
     appFooter,

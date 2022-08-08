@@ -1,5 +1,15 @@
+<template>
+  <div class="app-content">
+    <h1 class="text-lg font-semibold">
+      Name finder
+    </h1>
+
+    <name-finder />
+  </div>
+</template>
+
 <script lang="ts">
-import nameFinder from '@/components/name-finder/name-finder.vue';
+import nameFinder from '@src/components/name-finder/name-finder.vue';
 
 export default {
   name: 'page-name-finder',
@@ -8,13 +18,3 @@ export default {
   },
 }
 </script>
-
-<template>
-  <div class="app-content">
-    <h1 class="font-semibold text-lg">
-      Name finder
-    </h1>
-
-    <name-finder />
-  </div>
-</template>

@@ -1,6 +1,6 @@
 <script lang="ts">
-import appLogo from '@/components/app-logo.vue';
-import appMenu from '@/components/app-menu.vue';
+import appLogo from '@src/components/app-logo.vue';
+import appMenu from '@src/components/app-menu.vue';
 
 export default {
   name: 'app-header',
@@ -11,11 +11,11 @@ export default {
   setup () {
     const menuItems = [
       {
-        name: 'Home',
+        name: 'Главная',
         nameTo: 'page-home',
       },
       {
-        name: 'Apps',
+        name: 'Приложения',
         nameTo: 'page-apps',
       },
     ]
@@ -30,7 +30,7 @@ export default {
 <template>
   <header class="py-2">
     <div class="app-container">
-      <div class="flex justify-between items-center w-full">
+      <div class="flex items-center justify-between w-full">
 
         <app-logo />
 

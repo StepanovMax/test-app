@@ -56,7 +56,7 @@ export default {
       @click="type === 'add' ? addItem(item) : removeItem(item)"
       class="button button_add"
     >
-      {{ type === 'add' ? 'Add' : 'Remove' }} item
+      {{ type === 'add' ? 'Добавить' : 'Удалить' }}
     </button>
   </div>
 </template>
@@ -71,7 +71,7 @@ export default {
   }
 
 .button {
-  @apply px-1 py-0 text-sm font-semibold;
+  @apply px-2 py-0 text-sm font-semibold;
 }
 
   .button_add {
